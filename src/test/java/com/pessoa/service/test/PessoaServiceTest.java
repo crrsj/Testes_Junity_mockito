@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,8 @@ import com.pessoa.repository.PessoaService;
 @SpringBootTest
 public class PessoaServiceTest {
 	
+	private static final int INDEX = 0;
+
 	private static final String EMAIL = "carlos@gmail.com";
 
 	private static final String TELEFONE = "123";
@@ -70,7 +73,15 @@ public class PessoaServiceTest {
 	
 	@Test
 	void listar() {
-		
+		when(repository.findAll()).thenReturn(List.of(pessoa));
+		List<Pessoa> response = service.listar();
+		assertNotNull(response);
+		assertEquals(1, response.size());
+		assertEquals(Pessoa.class, response.get(INDEX).getClass());
+		assertEquals(ID, response.get(INDEX).getId());
+		assertEquals(NOME, response.get(INDEX).getNome());
+		assertEquals(TELEFONE, response.get(INDEX).getTelefone());
+		assertEquals(EMAIL, response.get(INDEX).getEmail());
 	}
 	@Test
 	void cadastrarPessoa() {
