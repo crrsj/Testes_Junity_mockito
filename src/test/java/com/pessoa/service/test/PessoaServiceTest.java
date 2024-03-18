@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -19,8 +18,6 @@ import com.pessoa.dto.PessoaDto;
 import com.pessoa.entity.Pessoa;
 import com.pessoa.repository.PessoaRepository;
 import com.pessoa.repository.PessoaService;
-
-import net.bytebuddy.agent.VirtualMachine.ForHotSpot.Connection.Response;
 
 @SpringBootTest
 public class PessoaServiceTest {
@@ -61,6 +58,16 @@ public class PessoaServiceTest {
 		assertEquals(TELEFONE, response.getTelefone());
 		assertEquals(EMAIL, response.getEmail());
 	}
+	 void findByIdFalha() {
+		 when(repository.findById(anyLong())).thenThrow(new IllegalArgumentException("Pessoa não encontrada"));
+		 try {
+			service.findbyId(ID);
+		 }catch(Exception ex){
+			 assertEquals(IllegalArgumentException.class, ex.getClass());
+			 assertEquals("Pessoa não encontrada", ex.getMessage());
+		 }
+	 }
+	
 	@Test
 	void listar() {
 		
