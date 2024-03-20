@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.pessoa.dto.PessoaDto;
-import com.pessoa.repository.PessoaService;
+import com.pessoa.service.PessoaService;
 
 @RestController
 @RequestMapping("cadastro")

@@ -2,7 +2,11 @@ package com.pessoa.service.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -14,15 +18,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 
 import com.pessoa.dto.PessoaDto;
 import com.pessoa.entity.Pessoa;
 import com.pessoa.repository.PessoaRepository;
-import com.pessoa.repository.PessoaService;
+import com.pessoa.service.PessoaService;
 
 @SpringBootTest
 public class PessoaServiceTest {
 	
+	private static final String PESSOA_NAO_ENCONTRADA = "Pessoa não encontrada";
+
 	private static final int INDEX = 0;
 
 	private static final String EMAIL = "carlos@gmail.com";
@@ -62,12 +69,12 @@ public class PessoaServiceTest {
 		assertEquals(EMAIL, response.getEmail());
 	}
 	 void findByIdFalha() {
-		 when(repository.findById(anyLong())).thenThrow(new IllegalArgumentException("Pessoa não encontrada"));
+		 when(repository.findById(anyLong())).thenThrow(new IllegalArgumentException(PESSOA_NAO_ENCONTRADA));
 		 try {
 			service.findbyId(ID);
 		 }catch(Exception ex){
 			 assertEquals(IllegalArgumentException.class, ex.getClass());
-			 assertEquals("Pessoa não encontrada", ex.getMessage());
+			 assertEquals(PESSOA_NAO_ENCONTRADA, ex.getMessage());
 		 }
 	 }
 	
@@ -84,15 +91,44 @@ public class PessoaServiceTest {
 		assertEquals(EMAIL, response.get(INDEX).getEmail());
 	}
 	@Test
-	void cadastrarPessoa() {
+	void cadastrarPessoaSucesso() {
+		 when(repository.save(any())).thenReturn(pessoa);
+		 Pessoa response = service.cadastrarPessoa(pessoaDto);
+		 assertNotNull(response);
+		 assertEquals(Pessoa.class, response.getClass());
+		 assertEquals(ID, response.getId());
+		 assertEquals(NOME, response.getNome());
+		 assertEquals(TELEFONE, response.getTelefone());
+		 assertEquals(EMAIL, response.getEmail());
+	}
+	void atualizarPessoaSucesso() {
+		when(repository.save(any())).thenReturn(pessoa);
+		 Pessoa response = service.atualizarPessoa(pessoaDto);
+		 assertNotNull(response);
+		 assertEquals(Pessoa.class, response.getClass());
+		 assertEquals(ID, response.getId());
+		 assertEquals(NOME, response.getNome());
+		 assertEquals(TELEFONE, response.getTelefone());
+		 assertEquals(EMAIL, response.getEmail());
+	}
+	  @Test
+	  void excluir() {
+	  when(repository.findById(anyLong())).thenReturn(optionalPessoa);
+	  doNothing().when(repository).deleteById(anyLong());
+	  service.excluir(ID);
+	  verify(repository,times(1)).deleteById(anyLong());
+	}
+	void excluirCasoFalhe() {
+		when(repository.findById(anyLong())).thenThrow(new IllegalArgumentException(PESSOA_NAO_ENCONTRADA));
+		try {
+			service.excluir(ID);
+		} catch (Exception e) {
+			assertEquals(PESSOA_NAO_ENCONTRADA, e.getMessage());
+		}
 		
 	}
-	void atualizarPessoa() {
-		
-	}
-	void excluir() {
-		
-	}
+	
+	
 	private void start() {
     pessoa = new Pessoa(ID,NOME,TELEFONE,EMAIL);
     pessoaDto = new PessoaDto(1L,NOME,TELEFONE,EMAIL);

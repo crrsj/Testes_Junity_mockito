@@ -1,4 +1,4 @@
-package com.pessoa.repository;
+package com.pessoa.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.pessoa.dto.PessoaDto;
 import com.pessoa.entity.Pessoa;
+import com.pessoa.repository.PessoaRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -32,6 +33,7 @@ public class PessoaService {
 		return busca.orElseThrow(()-> new IllegalArgumentException("Pessoa não encontrada."));
 	}
 	public void excluir(Long id) {
+		 findbyId(id);
 		repository.deleteById(id);
 	}
 	
