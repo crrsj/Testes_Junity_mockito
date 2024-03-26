@@ -2,9 +2,12 @@ package com.pessoa.controller.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.DynamicTest.stream;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.pessoa.controller.PessoaController;
@@ -75,7 +79,17 @@ private PessoaDto pessoaDto;
 	
 	@Test
 	void listar() {
-		
+		when(service.listar()).thenReturn(List.of(pessoa));
+		ResponseEntity<List<PessoaDto>> response = controller.listar();
+		assertNotNull(response);
+		assertNotNull(response.getBody());
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(ResponseEntity.class, response.getClass());		
+		assertEquals(PessoaDto.class, response.getBody().get(INDEX).getClass());
+		assertEquals(ID, response.getBody().get(INDEX).id());
+		assertEquals(NOME, response.getBody().get(INDEX).nome());
+		assertEquals(EMAIL, response.getBody().get(INDEX).email());
+		assertEquals(TELEFONE, response.getBody().get(INDEX).telefone());
 	}
 	
 	@Test

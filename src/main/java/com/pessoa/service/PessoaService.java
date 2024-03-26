@@ -24,7 +24,7 @@ public class PessoaService {
 		
 	}
 	
-	public List<Pessoa>listar(){
+	public List<Pessoa> listar(){
 		return repository.findAll();
 	}
 	
