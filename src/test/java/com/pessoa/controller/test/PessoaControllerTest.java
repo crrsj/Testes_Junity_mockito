@@ -2,13 +2,14 @@ package com.pessoa.controller.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.DynamicTest.stream;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -94,15 +95,34 @@ private PessoaDto pessoaDto;
 	
 	@Test
 	void cadastrarPessoaSucesso() {
-		
+		when(service.cadastrarPessoa(any())).thenReturn(pessoa);
+		ResponseEntity<PessoaDto>response = controller.cadastrarPessoa(pessoaDto);
+		assertEquals(ResponseEntity.class, response.getClass());
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertNotNull(response.getHeaders().get("Location"));
 	}
-	
+	@Test
 	void atualizarPessoaSucesso() {
-		
+		when(service.atualizarPessoa(pessoaDto)).thenReturn(pessoa);
+		ResponseEntity<PessoaDto>response = controller.atualizar(pessoaDto);
+		assertNotNull(response);
+		assertNotNull(response.getBody());
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(ResponseEntity.class, response.getClass());
+		assertEquals(ID, response.getBody().id());
+		assertEquals(NOME, response.getBody().nome());
+		assertEquals(TELEFONE, response.getBody().telefone());
+		assertEquals(EMAIL, response.getBody().email());
+		;
 	}
 	
-	void excluir() {
-		
+	void excluirSucesso() {
+		doNothing().when(service).excluir(anyLong());
+		ResponseEntity<PessoaDto> response = controller.excluir(ID);
+		assertNotNull(response);
+		assertEquals(ResponseEntity.class, response.getClass());
+		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+		verify(service,times(1)).excluir(anyLong());
 	}
 	
 	private void start() {

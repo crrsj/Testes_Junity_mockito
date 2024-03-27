@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.pessoa.dto.PessoaDto;
 import com.pessoa.service.PessoaService;
@@ -25,8 +25,8 @@ public class PessoaController {
 	
     
     @PostMapping
-	public ResponseEntity<PessoaDto>cadastrarPessoa(@RequestBody PessoaDto pessoa,UriComponentsBuilder uriBuilder){		
-		var uri = uriBuilder.path("cadastro/{id}").buildAndExpand(pessoa.id()).toUri();
+	public ResponseEntity<PessoaDto>cadastrarPessoa(@RequestBody PessoaDto pessoa){		
+		var uri = ServletUriComponentsBuilder.fromCurrentRequest().path("cadastro/{id}").buildAndExpand(pessoa.id()).toUri();
 		var salvar =  service.cadastrarPessoa(pessoa);
 		return ResponseEntity.created(uri).body(new PessoaDto(salvar)); 
 				
@@ -44,12 +44,12 @@ public class PessoaController {
     			
     }
     @DeleteMapping("{id}")
-    public ResponseEntity<Void>excluir(@PathVariable Long id){
+    public ResponseEntity<PessoaDto>excluir(@PathVariable Long id){
     	service.excluir(id);
     	return ResponseEntity.ok().build();
     }
     @PutMapping
-    public ResponseEntity<?>atualizar(@RequestBody PessoaDto atualize){    	
+    public ResponseEntity<PessoaDto>atualizar(@RequestBody PessoaDto atualize){    	
     	var atualizando = service.atualizarPessoa(atualize);    	
     	return ResponseEntity.ok().body(new PessoaDto(atualizando));
     			
